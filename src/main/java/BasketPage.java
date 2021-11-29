@@ -13,6 +13,13 @@ public class BasketPage {
         return deleteBtn;
     }
 
+    @FindBy(css = "p>a[ href=\"https://shop.tastycoffee.ru/coffee\"]")
+    private WebElement catalogPage;
+
+    public WebElement getCatalogPage() {
+        return catalogPage;
+    }
+
     public BasketPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver,this);

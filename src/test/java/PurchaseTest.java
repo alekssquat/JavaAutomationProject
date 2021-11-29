@@ -13,6 +13,8 @@ public class PurchaseTest {
     private static String password = "lepeniy783";
     private static WebDriver driver;
 
+    //Для сохранения атомарности тестов, решил собрать тестовые функции по пользовательским сценариям
+    /*
     @DisplayName("Entrance")
     @BeforeAll
     @Test
@@ -101,4 +103,6 @@ public class PurchaseTest {
         driver.quit();
         System.out.println("Driver closed");
     }
+
+     */
 }

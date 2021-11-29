@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: TestTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.141 s <<< FAILURE! - in TestTest
+TestTest.groupAssertions  Time elapsed: 0.095 s  <<< FAILURE!
+org.opentest4j.MultipleFailuresError: 
+numbers (2 failures)
+	org.opentest4j.AssertionFailedError: expected: <2> but was: <1>
+	org.opentest4j.AssertionFailedError: expected: <2> but was: <1>
+	at TestTest.groupAssertions(TestTest.java:12)
+

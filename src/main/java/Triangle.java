@@ -5,17 +5,17 @@ public class Triangle {
     float b;
     float c;
 
-    public Triangle() {
-        super();
-    }
 
+
+    public Triangle() {
+      super();
+    }
 
     public Triangle(float a, float b, float c) {
         this.a = a;
         this.b = b;
         this.c = c;
     }
-
 
     public double calcArea(float a, float b, float c) throws NotPositiveNumberException, NotTriangleException {
         double s=0.0;
@@ -30,8 +30,6 @@ public class Triangle {
         }
         return s;
     }
-
-
 
     public double calcArea() throws NotPositiveNumberException, NotTriangleException {
         a=this.a;
@@ -51,21 +49,16 @@ public class Triangle {
     }
 
 
-
-
 }
 
 class NotPositiveNumberException extends Exception{
-
-    @Override
-    public String toString() {
-        return "Не положительное число";
+    public NotPositiveNumberException() {
+        //System.out.println("Values less than 0");
     }
 }
 
 class NotTriangleException extends Exception{
-    @Override
-    public String toString() {
-        return "Из этого треугольник не сваришь";
+    public NotTriangleException() {
+        //System.out.println("Sum of two values less then third value");
     }
 }

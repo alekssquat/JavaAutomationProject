@@ -9,10 +9,6 @@ public class ProfileMyAccountPage {
     @FindBy(css = "a[href=\"https://shop.tastycoffee.ru/my-account\"]")
     private WebElement myAccountLink;
 
-    public WebElement getLegalNameField() {
-        return legalNameField;
-    }
-
     @FindBy(css = "input[name=\"legal_name\"]")
     private WebElement legalNameField;
 
@@ -26,10 +22,20 @@ public class ProfileMyAccountPage {
         myAccountLink.click();
     }
 
+    public WebElement getLegalNameField() {
+        return legalNameField;
+    }
+
+    public WebElement getMyAccountLink() {
+        return myAccountLink;
+    }
+
     public ProfileMyAccountPage inputLegalName(){
         legalNameField.sendKeys("1");
         return this;
     }
+
+
 
     public ProfileMyAccountPage saveUpdates(){
         saveBtn.click();

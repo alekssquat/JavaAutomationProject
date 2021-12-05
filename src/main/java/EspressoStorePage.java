@@ -18,6 +18,10 @@ public class EspressoStorePage {
     @FindBy(css = "div[id=\"supportTrigger\"]>div>span[class=\"text trigger-font-family\"]")
     private WebElement supportTriggerFrame;
 
+    public WebElement getSupportTriggerFrame() {
+        return supportTriggerFrame;
+    }
+
     @FindBy(css = "input[value=\"780\"]")
     private WebElement item780Frame; //НАТТИ
 
@@ -30,9 +34,7 @@ public class EspressoStorePage {
     @FindBy(css = "a[data-product-id=\"295\"]")
     private WebElement item295CompareBtn; //БРАЗЛИЯ СЕРРАДО
 
-    public WebElement getSupportTriggerFrame() {
-        return supportTriggerFrame;
-    }
+
 
     @FindBy(css = "span[id=\"header_cart_text\"]>div[class=\"greyText\"]")
     private WebElement basketLink;

@@ -20,6 +20,8 @@ public class BasketPage {
         return catalogPage;
     }
 
+
+
     public BasketPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver,this);

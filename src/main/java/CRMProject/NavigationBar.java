@@ -23,23 +23,35 @@ public class NavigationBar {
     @FindBy(id = "search-bar-search")
     private WebElement searchBar;
 
+    @FindBy(css = "#main-menu > ul > li:nth-child(3) > a > span")
+    private WebElement contactUL;
+
+    public WebElement getContactUL() {
+        return contactUL;
+    }
+
+    @FindBy(css = "li[data-route=\"crm_project_my\"]") //элемент в выпадающем списке
+    private WebElement myProjectLi;
+
+    @FindBy(xpath = "//*[@id=\"main-menu\"]/ul/li[1]/a/span")
+    private WebElement contractorsUL;
+
+    @FindBy(css = "li[data-route=\"crm_contact_index\"]") //элемент в выпадающем списке
+    private WebElement contactsLi;
+
+
+
+
     public NavigationBar (WebDriver driver){
         this.driver=driver;
         PageFactory.initElements(driver,this);
     }
 
-    public NavigationBar openContacts(){
-        Actions openContacts = new Actions(driver);
-
-        WebElement contractors = driver.findElement(By
-                .cssSelector("#main-menu > ul > li:nth-child(3) > a > span"));
-        openContacts.moveToElement(contractors);
-
-        WebElement contacts = driver.findElement(By
-                .cssSelector("li[data-route=\"crm_project_my\"]"));
-        openContacts.moveToElement(contacts);
-
-        openContacts.click().build().perform();
+    public NavigationBar openProjects(){
+        Actions openProjects = new Actions(driver);
+        openProjects.moveToElement(contactUL);
+        openProjects.moveToElement(myProjectLi);
+        openProjects.click().build().perform();
         return this;
     }
 
@@ -53,8 +65,17 @@ public class NavigationBar {
         return this;
     }
 
+    //элименты в открытом проекте
     public void deleteProject(){
         driver.findElement(By.cssSelector("a[class=\" btn icons-holder-text no-hash remove-button\"]")).click();
         driver.findElement(By.cssSelector("a[class=\"btn ok btn-primary\"]")).click();
+    }
+
+    public NavigationBar openContacts(){
+        Actions openContacts = new Actions(driver);
+        openContacts.moveToElement(contractorsUL);
+        openContacts.moveToElement(contactsLi);
+        openContacts.click().build().perform();
+        return this;
     }
 }

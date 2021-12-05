@@ -1,4 +1,5 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.*;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -9,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class MyProjectTest {
@@ -17,8 +19,10 @@ public class MyProjectTest {
     private static String password = "lepeniy783";
     private static WebDriver driver;
     private static String itemTitle="Бариста";
+    private static String urlDriver="https://shop.tastycoffee.ru/";
 
     @DisplayName("Entrance")
+    @Description("Инициализируем драйвер и входим в аккаунт")
     @BeforeAll
     @Test
     static void InitializeDriver(){
@@ -26,10 +30,13 @@ public class MyProjectTest {
 
         ChromeOptions chromeOptions=new ChromeOptions();
         chromeOptions.addArguments("incognito");
+        //chromeOptions.addArguments("--headless"); // по какой-то причине тесты с этой опцией падают
+        chromeOptions.addArguments("start-maximized");
+        //chromeOptions.setPageLoadTimeout(Duration.ofSeconds(12));
 
-        driver = new ChromeDriver();
+        driver = new ChromeDriver(chromeOptions);
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-        driver.get("https://shop.tastycoffee.ru/");
+        driver.get(urlDriver);
         System.out.println("DriverUp");
 
 
@@ -40,13 +47,23 @@ public class MyProjectTest {
         System.out.println("LogIn");
 
         //если ссылка на аккаунт появилась
-        Assertions.assertTrue(driver.findElement(By
-                .cssSelector("a[href=\"https://shop.tastycoffee.ru/order-histories\"]"))
+        Assertions.assertTrue(new MainPage(driver).getOrderHistories()
                 .isDisplayed());
         System.out.println("Main Page");
     }
+    @DisplayName("To Main Page")
+    @Description("Возвращаемся на главную страницу")
+    @BeforeEach
+    @Test
+     void InitMainPage(){
+        Assertions.assertDoesNotThrow( () -> driver.navigate().to("https://shop.tastycoffee.ru/"),
+                "Страница недоступна");
+    }
+
 
     @DisplayName("Edit My Account Info Test")
+    @Description("Переход в профиль, редактирование данных, сохранение")
+    @Story("Измение данных в акааунте")
     @Test
     void editMyAccountInfo(){
 
@@ -54,16 +71,12 @@ public class MyProjectTest {
 
         mainPage.openProfileLink();
 
+        ProfileMyAccountPage profileMyAccountPage=new ProfileMyAccountPage(driver);
+
         //если вкладка с личной информацие доступна
-        Assertions.assertTrue(driver.findElement(By
-                        .cssSelector("a[href=\"https://shop.tastycoffee.ru/my-account\"]"))
+        Assertions.assertTrue(profileMyAccountPage.getMyAccountLink()
                 .isDisplayed());
         System.out.println("Profile page");
-
-
-
-
-        ProfileMyAccountPage profileMyAccountPage=new ProfileMyAccountPage(driver);
 
         String str1=profileMyAccountPage.getLegalNameField().getText();
         profileMyAccountPage.inputLegalName().saveUpdates();
@@ -76,18 +89,17 @@ public class MyProjectTest {
 
 
     @DisplayName("Basket Control Test")
+    @Description("Поиск товара в катологе, добавление в корзину, удаление из корзины")
+    @Story("Проверка сценария покупки")
     @Test
     void basketControlTest(){
         MainPage mainPage=new MainPage(driver);
 
-        mainPage.clickEspressoIcon();
-
-
         //если доступна кнопка перехода в каталог
-        Assertions.assertTrue(driver.findElement(By.cssSelector("a[class=\"buyBtn \"]"))
-                .isDisplayed(),"Ссылка на каталог эспрессо с главной страницы не доступна");
+        Assertions.assertTrue(mainPage.getBuyItemBtn()
+                .isDisplayed(),"Ссылка на покупку первого лота из списка сорта недели недоступна");
+        mainPage.clickEspressoIcon();
         System.out.println("Espresso page");
-
 
         EspressoStorePage espressoStorePage=new EspressoStorePage(driver);
 
@@ -109,43 +121,42 @@ public class MyProjectTest {
 
         BasketPage basketPage=new BasketPage(driver);
 
+
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(espressoStorePage.getSupportTriggerFrame()));
         basketPage.deleteItem();
 
-        //если корзина пуста
+        //для выполнения корзина должна быть пуста
         Assertions.assertTrue(basketPage.getCatalogPage()
                 .isDisplayed(),"Корзина не пуста");
         System.out.println("Item deleted");
     }
 
     @DisplayName("Catalog Searching Test")
+    @Description("Открываем строку поиска по сайту, проверяем наличие товара, переходим на страницу товара")
+    @Story("Функционал поиска по каталогу")
     @Test
     void searching(){
         MainPage mainPage=new MainPage(driver);
 
-        mainPage.inputSearch(itemTitle);
-
-        //если искомый элемент есть в списке
-        WebElement itemElement=driver.findElement(By.linkText(itemTitle));
-        new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(itemElement));
-        Assertions.assertTrue(itemElement.isDisplayed(),"искомого товара нет в списке");
-
-        itemElement.click();
+        mainPage.inputSearch(itemTitle); //набираем искомый товар и жмем enter
 
         //если страница товара доступна
         Assertions.assertTrue(driver.findElement(By.linkText(itemTitle)).isDisplayed(),"страница товара не доступна");
     }
 
-    @DisplayName("Сравнение Продуктов")
+    @DisplayName("Comparing test")
+    @Description("Переходим в каталог, добавляем два первыйх товара в сравнение, " +
+            "переходим к списку, удалем товары из списка при помощи скрипта")
+    @Story("Проверка функции сравнения товаров")
     @Test
     void productComparing(){
         MainPage mainPage=new MainPage(driver);
 
-        mainPage.clickEspressoIcon();
-
-
         //если доступна кнопка перехода в каталог
-        Assertions.assertTrue(driver.findElement(By.cssSelector("a[class=\"buyBtn \"]"))
-                .isDisplayed(),"Ссылка на каталог эспрессо с главной страницы не доступна");
+        Assertions.assertTrue(mainPage.getBuyItemBtn()
+                .isDisplayed(),"Ссылка на покупку первого лота из списка сорта недели недоступна");
+
+        mainPage.clickEspressoIcon();
         System.out.println("Espresso page");
 
         EspressoStorePage espressoStorePage=new EspressoStorePage(driver);
@@ -155,11 +166,10 @@ public class MyProjectTest {
         System.out.println("compare list complete");
 
         //если товары добавлены в сравнение
-        WebElement productsCountCompare=driver.findElement(By.id("countCompareProducts"));
-        new WebDriverWait(driver,10).until(ExpectedConditions.visibilityOf(productsCountCompare));
-        Assertions.assertTrue(productsCountCompare.isDisplayed());
-        espressoStorePage.clickCompare();
+        new WebDriverWait(driver,10).until(ExpectedConditions.elementToBeClickable(espressoStorePage.getSupportTriggerFrame()));
+        mainPage.clickCountCompareProductsIcon();
         System.out.println("compare page");
+
 
 
 
@@ -172,6 +182,7 @@ public class MyProjectTest {
 
 
     @DisplayName("Close driver")
+    @Description("закрытие драйвера")
     @AfterAll
     @Test
     static void logIn(){
